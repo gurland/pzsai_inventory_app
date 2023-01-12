@@ -3,3 +3,4 @@ ijson
 cffi
 peewee
 psycopg2-binary
+flask

@@ -1,7 +1,8 @@
 from peewee import *
+from settings import PG_USER, PG_PASSWORD, PG_DB, PG_HOST
 
 
-db = PostgresqlDatabase("postgres", user='postgres', host='localhost', password="example")
+db = PostgresqlDatabase(PG_DB, user=PG_USER, host=PG_HOST, password=PG_PASSWORD)
 
 
 class Base(Model):
@@ -19,6 +20,12 @@ class Product(Base):
     fat_g = DecimalField()
     carbohydrate_g = DecimalField()
     energy_kcal = DecimalField(null=True)
+
+    def to_dict(self):
+        return {'id': self.id, 'brand': self.brand, 'description': self.description,
+                'ingredients': self.ingredients, 'category': self.category,
+                'protein_g': self.protein_g, 'fat_g': self.fat_g,
+                'carbohydrate_g': self.carbohydrate_g, 'energy_kcal': self.energy_kcal}
 
     @classmethod
     def from_dict(cls, record):

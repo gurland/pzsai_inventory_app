@@ -10,8 +10,12 @@ services:
     ports:
       - 5432:5432
 
-  adminer:
-    image: adminer
-    restart: always
+  api:
+    build: .
+    volumes:
+      - ./src:/app
+    environment:
+      PG_HOST: "db"
     ports:
-      - 8080:8080
+      - 80:80
+
