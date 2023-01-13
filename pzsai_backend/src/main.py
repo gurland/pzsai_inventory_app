@@ -21,9 +21,14 @@ def get_products():
 
     q = Product.select()
     if search_term:
-        q = q.where(Product.brand.like(f"%{search_term}%"))
+        if search_term.isdigit():
+            q = q.where(Product.id == search_term)
+        else:
+            q = q.where(Product.brand.like(f"%{search_term}%"))
     if category:
         q = q.where(Product.category == category)
+    else:
+        q = q.where(Product.category.is_null(False))
 
     q = q.limit(10)
 

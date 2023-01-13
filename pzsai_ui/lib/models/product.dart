@@ -1,4 +1,6 @@
 class Product {
+  final int id;
+
   final String? bannerURL;
   final String? ingredients;
   final String? category;
@@ -12,6 +14,7 @@ class Product {
   final double? energyKcal;
 
   Product({
+    required this.id,
     this.bannerURL,
     this.ingredients,
     this.category,
@@ -22,4 +25,19 @@ class Product {
     required this.carbohydrateG,
     this.energyKcal,
   });
+
+  factory Product.fromJson(Map<String, dynamic> json) {
+    return Product(
+      id: json['id'],
+      brand: json['brand'],
+      description: json['description'],
+      bannerURL: json['category'],
+      ingredients: json['ingredients'],
+      category: json['category'],
+      proteinG: double.parse(json['protein_g']),
+      fatG: double.parse(json['fat_g']),
+      carbohydrateG: double.parse(json['carbohydrate_g']),
+      energyKcal: double.parse(json['energy_kcal']),
+    );
+  }
 }

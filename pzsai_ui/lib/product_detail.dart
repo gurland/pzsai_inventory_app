@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'models/product.dart';
+import 'package:barcode_widget/barcode_widget.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class ProductDetail extends StatelessWidget {
   final Product product;
@@ -9,7 +11,9 @@ class ProductDetail extends StatelessWidget {
   Widget build(BuildContext context) {
     // TODO: implement build
     return Scaffold(
-        appBar: AppBar(title: Text(product.description)),
+        appBar: AppBar(
+          title: Text(product.description),
+        ),
         body: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -20,17 +24,24 @@ class ProductDetail extends StatelessWidget {
     var result = <Widget>[];
     result.add(_sectionTitle(product.description));
     result.add(_banner(product.bannerURL, 170.0));
-    result.add(_sectionText(RichText(
-        text: TextSpan(
+    result.add(
+      _sectionText(
+        RichText(
+          text: TextSpan(
             style: TextStyle(fontSize: 16, color: Colors.black),
             children: [
-          _textSpanIngredients(product.ingredients),
-          _textSpanKeyValue("Brand", product.brand),
-          _textSpanKeyValue("Protein", "${product.proteinG} g"),
-          _textSpanKeyValue("Fat", "${product.fatG} g"),
-          _textSpanKeyValue("Carbohydrate", "${product.carbohydrateG} g"),
-          _textSpanKeyValue("Food energy", "${product.energyKcal} g"),
-        ]))));
+              _textSpanIngredients(product.ingredients),
+              _textSpanKeyValue("Brand", product.brand),
+              _textSpanKeyValue("Protein", "${product.proteinG} g"),
+              _textSpanKeyValue("Fat", "${product.fatG} g"),
+              _textSpanKeyValue("Carbohydrate", "${product.carbohydrateG} g"),
+              _textSpanKeyValue("Food energy", "${product.energyKcal} g"),
+            ],
+          ),
+        ),
+      ),
+    );
+    result.add(_sectionBarcode(product.id));
 
     return result;
   }
@@ -78,9 +89,22 @@ class ProductDetail extends StatelessWidget {
         padding: EdgeInsets.fromLTRB(25.0, 25.0, 25.0, 10.0),
         child: Text(text,
             textAlign: TextAlign.left,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 25.0,
               color: Colors.black,
             )));
+  }
+
+  Widget _sectionBarcode(int product_id) {
+    return Container(
+        padding: EdgeInsets.fromLTRB(25.0, 5.0, 25.0, 10.0),
+        child: BarcodeWidget(
+          barcode: Barcode.itf(), // Barcode type and settings
+          data: product_id.toString().length % 2 == 0
+              ? product_id.toString()
+              : '0' + product_id.toString(), // Content
+          width: 300,
+          height: 100,
+        ));
   }
 }
