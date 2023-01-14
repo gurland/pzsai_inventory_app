@@ -28,7 +28,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('My Personal Journal'),
+        title: const Text('Products'),
         automaticallyImplyLeading: false,
         centerTitle: true,
         actions: [

@@ -1,7 +1,7 @@
 class Product {
   final int id;
 
-  final String? bannerURL;
+  String? bannerURL;
   final String? ingredients;
   final String? category;
 
@@ -31,7 +31,6 @@ class Product {
       id: json['id'],
       brand: json['brand'],
       description: json['description'],
-      bannerURL: json['category'],
       ingredients: json['ingredients'],
       category: json['category'],
       proteinG: double.parse(json['protein_g']),
