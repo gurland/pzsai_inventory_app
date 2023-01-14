@@ -1,4 +1,4 @@
-from flask import Flask, request
+from flask import Flask, request, send_from_directory
 from models import Product
 
 app = Flask(__name__)
@@ -12,6 +12,11 @@ def index():
 @app.route("/api")
 def heartbeat():
     return {"message": "Api is running"}
+
+
+@app.route('/images/<path:path>')
+def send_report(path):
+    return send_from_directory('seed_images', path+".jpg")
 
 
 @app.route("/api/products")
