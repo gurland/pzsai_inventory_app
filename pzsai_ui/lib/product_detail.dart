@@ -11,19 +11,23 @@ class ProductDetail extends StatelessWidget {
   Widget build(BuildContext context) {
     // TODO: implement build
     return Scaffold(
-        appBar: AppBar(
-          title: Text(product.description),
+      appBar: AppBar(
+        title: Text(product.description),
+      ),
+      body: SingleChildScrollView(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: _renderBody(context, product),
         ),
-        body: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: _renderBody(context, product)));
+      ),
+    );
   }
 
   List<Widget> _renderBody(BuildContext context, Product product) {
     var result = <Widget>[];
     result.add(_sectionTitle(product.description));
-    result.add(_banner(product.bannerURL, 170.0));
+    result.add(banner(product.bannerURL, 170.0));
     result.add(
       _sectionText(
         RichText(
@@ -32,6 +36,9 @@ class ProductDetail extends StatelessWidget {
             children: [
               _textSpanIngredients(product.ingredients),
               _textSpanKeyValue("Brand", product.brand),
+              product.category != null
+                  ? _textSpanKeyValue("Category", product.category!)
+                  : TextSpan(),
               _textSpanKeyValue("Protein", "${product.proteinG} g"),
               _textSpanKeyValue("Fat", "${product.fatG} g"),
               _textSpanKeyValue("Carbohydrate", "${product.carbohydrateG} g"),
@@ -46,12 +53,28 @@ class ProductDetail extends StatelessWidget {
     return result;
   }
 
-  Widget _banner(String? url, double height) {
-    Image bannerImage = url != null
-        ? Image.network(url, fit: BoxFit.fitWidth)
-        : const Image(
-            image: AssetImage("images/no_banner_image.jpg"),
-            fit: BoxFit.fitHeight);
+  static Widget banner(String? url, double height) {
+    const Image noBannerImage = Image(
+        image: AssetImage("images/no_banner_image.jpg"), fit: BoxFit.fitHeight);
+    Widget bannerImage = url != null
+        ? CachedNetworkImage(
+            imageUrl: url,
+            imageBuilder: (context, imageProvider) => Container(
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: imageProvider,
+                  fit: BoxFit.fitHeight,
+                ),
+              ),
+            ),
+            placeholder: (context, url) => SizedBox(
+              child: CircularProgressIndicator(),
+              height: 50.0,
+              width: 50.0,
+            ),
+            errorWidget: (context, url, error) => noBannerImage,
+          )
+        : noBannerImage;
 
     return Container(
         constraints: BoxConstraints.tightFor(height: height),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:pzsai_ui/product_detail.dart';
 import 'package:pzsai_ui/styles.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'product_detail.dart';
 
 import 'models/product.dart';
 
@@ -33,18 +34,10 @@ class ProductList extends StatelessWidget {
     );
   }
 
-  Widget _banner(String? url, double height) {
-    return url != null
-        ? Image(image: CachedNetworkImageProvider(url), fit: BoxFit.fitWidth)
-        : const Image(
-            image: AssetImage("images/no_banner_image.jpg"),
-            fit: BoxFit.fitHeight);
-  }
-
   Widget _itemThumbnail(Product product) {
     return Container(
       constraints: BoxConstraints.tightFor(width: 100.0),
-      child: _banner(product.bannerURL, 30),
+      child: ProductDetail.banner(product.bannerURL, 30),
     );
   }
 

@@ -6,6 +6,7 @@ import 'product_list.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'models/product_service.dart';
+import 'package:easy_search_bar/easy_search_bar.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -14,31 +15,34 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  String searchTerm = "cola";
+  String searchTerm = "Cola";
 
   late Future<List<Product>> _products;
 
   @override
   void initState() {
     super.initState();
-    _products = ProductService.GetProducts(searchTerm);
+    _products = ProductService.SearchProducts(searchTerm);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
+      appBar: EasySearchBar(
         title: const Text('Products'),
-        automaticallyImplyLeading: false,
-        centerTitle: true,
+        onSearch: (searchTerm) => {
+          if (searchTerm.length > 1)
+            {
+              setState(
+                () => {_products = ProductService.SearchProducts(searchTerm)},
+              )
+            }
+        },
+        suggestions: ["Cola", "Chips", "Pepsi"],
         actions: [
           IconButton(
-            onPressed: () {},
-            icon: const Icon(Icons.search),
-          ),
-          IconButton(
             icon: const Icon(Icons.document_scanner_outlined),
-            iconSize: 38,
+            iconSize: 26,
             tooltip: 'Search by barcode',
             onPressed: () async {
               String barcodeScanRes;
@@ -46,6 +50,13 @@ class _HomeScreenState extends State<HomeScreen> {
                 barcodeScanRes = await FlutterBarcodeScanner.scanBarcode(
                     '#ff6666', 'Cancel', true, ScanMode.BARCODE);
                 print(barcodeScanRes);
+                if (barcodeScanRes != "-1") {
+                  setState(
+                    () => {
+                      _products = ProductService.SearchProducts(barcodeScanRes)
+                    },
+                  );
+                }
               } on PlatformException {
                 barcodeScanRes = 'Failed to get platform version.';
               }
