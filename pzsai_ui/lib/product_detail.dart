@@ -1,10 +1,20 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'models/product.dart';
 import 'package:barcode_widget/barcode_widget.dart';
+import 'package:barcode_image/barcode_image.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+
+import 'package:pdf/pdf.dart';
+import 'package:image/image.dart' as img;
+import 'package:pdf/widgets.dart' as pw;
+import 'package:printing/printing.dart';
 
 class ProductDetail extends StatelessWidget {
   final Product product;
+  final barcodeDoc = pw.Document();
+
   ProductDetail(this.product);
 
   @override
@@ -48,7 +58,7 @@ class ProductDetail extends StatelessWidget {
         ),
       ),
     );
-    result.add(_sectionBarcode(product.id));
+    result.add(_sectionBarcode(context, product.id));
 
     return result;
   }
@@ -118,16 +128,63 @@ class ProductDetail extends StatelessWidget {
             )));
   }
 
-  Widget _sectionBarcode(int product_id) {
-    return Container(
-        padding: EdgeInsets.fromLTRB(25.0, 5.0, 25.0, 10.0),
-        child: BarcodeWidget(
-          barcode: Barcode.itf(), // Barcode type and settings
-          data: product_id.toString().length % 2 == 0
-              ? product_id.toString()
-              : '0' + product_id.toString(), // Content
-          width: 300,
-          height: 100,
+  Widget _sectionBarcode(BuildContext context, int product_id) {
+    var barcodeData = product_id.toString().length % 2 == 0
+        ? product_id.toString()
+        : '0' + product_id.toString();
+    BarcodeWidget barcode = BarcodeWidget(
+      barcode: Barcode.itf(), // Barcode type and settings
+      data: barcodeData, // Content
+      width: 300,
+      height: 100,
+    );
+
+    final image = img.Image(600, 300);
+
+    // Fill it with a solid color (white)
+    img.fill(image, img.getColor(255, 255, 255));
+
+    // Draw the barcode
+    drawBarcode(image, Barcode.itf(), barcodeData, font: img.arial_24);
+
+    var encoder = img.PngEncoder();
+    encoder.addFrame(image);
+
+    barcodeDoc.addPage(
+      pw.Page(
+        pageFormat: PdfPageFormat.a4,
+        build: (pw.Context context) {
+          return pw.Center(
+            child: pw.Image(
+              pw.MemoryImage(
+                Uint8List.fromList(encoder.finish() ?? []),
+              ),
+            ),
+          ); // Center
+        },
+      ),
+    ); // Page
+
+    return InkWell(
+        onTap: () => {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => Scaffold(
+                      appBar: AppBar(
+                        title: Text("PDF Preview"),
+                      ),
+                      body: Container(
+                        child: PdfPreview(
+                          build: (format) => barcodeDoc.save(),
+                        ),
+                      ),
+                    ),
+                  ))
+            },
+        child: Container(
+          padding: EdgeInsets.fromLTRB(25.0, 5.0, 25.0, 10.0),
+          child: barcode,
         ));
   }
 }

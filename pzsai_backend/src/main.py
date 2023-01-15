@@ -35,7 +35,7 @@ def get_products():
     else:
         q = q.where(Product.category.is_null(False))
 
-    q = q.limit(10)
+    q = q.limit(20)
 
     return [product.to_dict() for product in q]
 

@@ -15,7 +15,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  String searchTerm = "Cola";
+  String searchTerm = "Soda";
 
   late Future<List<Product>> _products;
 
@@ -38,7 +38,7 @@ class _HomeScreenState extends State<HomeScreen> {
               )
             }
         },
-        suggestions: ["Cola", "Chips", "Pepsi"],
+        suggestions: ["Soda", "Chips", "Pepsi"],
         actions: [
           IconButton(
             icon: const Icon(Icons.document_scanner_outlined),
