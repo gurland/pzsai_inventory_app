@@ -1,5 +1,5 @@
 from flask import Flask, request, send_from_directory
-from models import Product
+from models import Product, db
 
 app = Flask(__name__)
 
@@ -29,7 +29,7 @@ def get_products():
         if search_term.isdigit():
             q = q.where(Product.id == search_term)
         else:
-            q = q.where(Product.brand.like(f"%{search_term}%"))
+            q = q.where(Product.search_content.match(search_term))
     if category:
         q = q.where(Product.category == category)
     else:
@@ -47,6 +47,17 @@ def get_product(product_id):
         return q[0].to_dict()
     else:
         return {"message": "not found"}, 404
+
+
+@app.before_request
+def before_request():
+    db.connect()
+
+
+@app.after_request
+def after_request(response):
+    db.close()
+    return response
 
 
 if __name__ == "__main__":

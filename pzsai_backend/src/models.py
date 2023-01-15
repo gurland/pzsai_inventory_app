@@ -1,4 +1,4 @@
-from peewee import *
+from playhouse.postgres_ext import *
 from settings import PG_USER, PG_PASSWORD, PG_DB, PG_HOST
 
 
@@ -14,6 +14,7 @@ class Product(Base):
     id = IntegerField(primary_key=True)
     brand = CharField()
     description = TextField()
+    search_content = TSVectorField()
     ingredients = TextField()
     category = CharField(null=True)
     protein_g = DecimalField()
@@ -47,6 +48,7 @@ class Product(Base):
             id=record["fdcId"],
             brand=record["brandOwner"],
             description=record["description"].capitalize(),
+            search_content=fn.to_tsvector(f'{record["fdcId"]} {record["brandOwner"]} {record["description"].capitalize()}'),
             ingredients=record["ingredients"].capitalize(),
             category=category,
             protein_g=protein_g,
